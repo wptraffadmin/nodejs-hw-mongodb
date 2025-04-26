@@ -1,33 +1,44 @@
 import express from 'express';
 import pinoHttp from 'pino-http';
-import dotenv from "dotenv";
+import cors from 'cors';
+import dotenv from 'dotenv';
 import { getEnvVar } from './utils/getEnvVar.js';
+import { getAllContactsController, createContactController, getContactByIdController } from './controllers/contacts.js';
+
 
 dotenv.config();
 
-const app = express();
+export const setupServer = () => {
+  const app = express();
 
-const PORT = Number(getEnvVar('PORT', '3000'));
+  const PORT = Number(getEnvVar('PORT', '3000'));
 
-const logger = pinoHttp({
-  transport: {
-    target: 'pino-pretty',
-    options: {
-      colorize: true
+  const logger = pinoHttp({
+    transport: {
+      target: 'pino-pretty',
+      options: {
+        colorize: true
+      }
     }
-  }
-});
+  });
 
-app.use(express.json());
-app.use(logger);
+  app.use(cors());
+  app.use(express.json());
+  app.use(logger);
 
+  app.get('/', (req, res) => {
+    res.json({ message: 'Сервер працює' });
+  });
 
-app.get('/', (req, res) => {
-  res.json({ message: 'Сервер працює' });
-});
+  app.get('/contacts', getAllContactsController);
+  app.post('/contacts', createContactController);
+  app.get('/contacts/:contactId', getContactByIdController);
 
-export const startServer = () => {
+  app.use((req, res) => {
+    res.status(404).json({ message: 'Not found' });
+  });
+
   app.listen(PORT, () => {
-    console.log(`Сервер запущено на порту ${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
   });
 };
