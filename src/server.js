@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import { getEnvVar } from './utils/getEnvVar.js';
 import router from './routers/index.js';
 import cookieParser from 'cookie-parser';
+import { UPLOAD_DIR } from './constants/index.js';
 
 import { errorHandler, notFoundHandler } from './middlewares/errorHandler.js';
 
@@ -31,6 +32,8 @@ export const setupServer = () => {
     res.json({ message: 'Сервер працює' });
   });
 
+  app.use('/uploads', express.static(UPLOAD_DIR));
+  
   app.use(router);
 
   app.use(notFoundHandler);

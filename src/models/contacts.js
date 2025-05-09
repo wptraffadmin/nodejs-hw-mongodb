@@ -28,6 +28,7 @@ import { model, Schema } from 'mongoose';
       ref: 'users',
       required: true,
      },
+     photo: { type: String },
    },
    {
      timestamps: true,
